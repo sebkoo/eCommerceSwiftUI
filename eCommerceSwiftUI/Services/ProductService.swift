@@ -27,3 +27,25 @@ final class ProductService: ProductServiceProtocol {
         return products
     }
 }
+
+final class MockProductService: ProductServiceProtocol {
+    var shouldReturnError = false
+
+    func fetchProducts() async throws -> [Product] {
+        if shouldReturnError {
+            throw URLError(.badServerResponse)
+        }
+        
+        return [
+            Product(
+                id: 1,
+                title: "Mock Product",
+                price: 9.99,
+                description: "Description",
+                category: "Category",
+                image: URL(string: "https://example.com/image.png")!,
+                rating: Product.Rating(rate: 4.5, count: 100)
+            )
+        ]
+    }
+}

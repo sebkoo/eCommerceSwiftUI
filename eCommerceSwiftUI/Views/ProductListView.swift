@@ -8,25 +8,29 @@
 import SwiftUI
 
 struct ProductListView: View {
-    @State private var products: [Product] = []
+    @StateObject var viewModel: ProductListViewModel
 
     var body: some View {
         NavigationView {
-            List(products) { product in
-                Text(product.title)
+            Group {
+                if viewModel.isLoading {
+                    ProgressView("Loading...")
+                } else if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage).foregroundColor(.red)
+                } else {
+                    List(viewModel.products) { product in
+                        Text(product.title)
+                    }
+                }
             }
             .navigationTitle(Text("Product List"))
             .task {
-                do {
-                    products = try await ProductService().fetchProducts()
-                } catch {
-                    print("Error fetching products: \(error)")
-                }
+                await viewModel.fetchProducts()
             }
         }
     }
 }
 
 #Preview {
-    ProductListView()
+    ProductListView(viewModel: ProductListViewModel(service: ProductService()))
 }
