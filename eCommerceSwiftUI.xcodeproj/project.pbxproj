@@ -40,11 +40,6 @@
 			path = eCommerceSwiftUITests;
 			sourceTree = "<group>";
 		};
-		F10E70152DF24FF80035A1A2 /* eCommerceSwiftUIUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = eCommerceSwiftUIUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,7 +72,6 @@
 			children = (
 				F10E6FFD2DF24FF40035A1A2 /* eCommerceSwiftUI */,
 				F10E700B2DF24FF80035A1A2 /* eCommerceSwiftUITests */,
-				F10E70152DF24FF80035A1A2 /* eCommerceSwiftUIUITests */,
 				F10E6FFC2DF24FF40035A1A2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -152,9 +146,6 @@
 			);
 			dependencies = (
 				F10E70142DF24FF80035A1A2 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				F10E70152DF24FF80035A1A2 /* eCommerceSwiftUIUITests */,
 			);
 			name = eCommerceSwiftUIUITests;
 			packageProductDependencies = (
