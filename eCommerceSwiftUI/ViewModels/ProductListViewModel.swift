@@ -12,8 +12,14 @@ final class ProductListViewModel: ObservableObject {
     @Published var products: [Product] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    @Published var searchQuery: String = ""
 
     private let service: ProductServiceProtocol
+
+    var filteredProducts: [Product] { searchQuery.isEmpty
+        ? products
+        : products.filter { $0.title.localizedCaseInsensitiveContains(searchQuery) }
+    }
 
     init(service: ProductServiceProtocol) {
         self.service = service

@@ -21,6 +21,7 @@ struct MainView: View {
                 .tabItem {
                     Label("Cart", systemImage: "cart")
                 }
+                .badge(cartManager.items.reduce(0) { $0 + $1.quantity })
         }
         .environmentObject(cartManager)
     }
