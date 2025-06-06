@@ -21,3 +21,14 @@ struct Product: Codable, Identifiable, Equatable {
         let count: Int
     }
 }
+
+extension Product {
+    static let mock = Product(
+        id: 1,
+        title: "Swift Sneakers",
+        price: 59.99,
+        description: "Lightweight and stylish running shoes.",
+        category: "shoes",
+        image: URL(string: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg")!,
+        rating: .init(rate: 4.5, count: 123))
+}

@@ -19,7 +19,10 @@ struct ProductListView: View {
                     Text(errorMessage).foregroundColor(.red)
                 } else {
                     List(viewModel.filteredProducts) { product in
-                        NavigationLink(destination: ProductDetailView(product: product)) {
+                        NavigationLink(destination: ProductDetailView(
+                            viewModel: ProductDetailViewModel(
+                                product: product))
+                        ) {
                             HStack {
                                 AsyncImage(url: product.image) { image in
                                     image.resizable()

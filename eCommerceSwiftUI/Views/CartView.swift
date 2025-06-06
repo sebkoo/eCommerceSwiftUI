@@ -12,25 +12,42 @@ struct CartView: View {
 
     var body: some View {
         NavigationView {
-            List {
-                ForEach(cartManager.items) { item in
-                    HStack {
-                        Text(item.product.title)
-                            .lineLimit(1)
-                        Spacer()
-                        Text("Qty: \(item.quantity)")
+            VStack {
+                if cartManager.items.isEmpty {
+                    Text("🛒 Your cart is empty")
+                        .font(.headline)
+                        .padding()
+                    Spacer()
+                } else {
+                    List {
+                        ForEach(cartManager.items) { item in
+                            HStack {
+                                Text(item.product.title)
+                                    .lineLimit(1)
+                                Spacer()
+                                Text("Qty: \(item.quantity)")
+                            }
+                        }
+                        .onDelete { indexSet in
+                            indexSet.map { cartManager.items[$0] }
+                                .forEach(cartManager.removeFromCart)
+                        }
                     }
-                }
-                .onDelete { indexSet in
-                    indexSet.map { cartManager.items[$0] }
-                        .forEach(cartManager.removeFromCart)
+
+                    NavigationLink("Proceed to Checkout") {
+                        CheckoutView(paymentService: PaymentService())
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .padding()
                 }
             }
             .navigationTitle("Cart")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Clear") {
-                        cartManager.clearCart()
+                    if !cartManager.items.isEmpty {
+                        Button("Clear") {
+                            cartManager.clearCart()
+                        }
                     }
                 }
             }

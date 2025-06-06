@@ -11,9 +11,16 @@ import Foundation
 final class CartManager: ObservableObject {
     @Published private(set) var items: [CartItem] = []
 
-    private let storageKey = "cart_items"
+    private let storage: CartStorageProtocol
 
-    init() { loadCart() }
+    var total: Double {
+        items.reduce(0) { $0 + $1.product.price * Double($1.quantity) }
+    }
+
+    init(storage: CartStorageProtocol = CartStorage()) {
+        self.storage = storage
+        self.items = storage.loadCart()
+    }
 
     func addToCart(_ product: Product) {
         if let index = items.firstIndex(where: { $0.product.id == product.id }) {
@@ -21,30 +28,16 @@ final class CartManager: ObservableObject {
         } else {
             items.append(CartItem(id: product.id, product: product, quantity: 1))
         }
-        saveCart()
+        storage.saveCart(items)
     }
 
     func removeFromCart(_ item: CartItem) {
         items.removeAll() { $0.id == item.id }
-        saveCart()
+        storage.saveCart(items)
     }
 
     func clearCart() {
         items.removeAll()
-        saveCart()
-    }
-
-    private func saveCart() {
-        if let data = try? JSONEncoder().encode(items) {
-            UserDefaults.standard.set(data, forKey: storageKey)
-        }
-    }
-
-    private func loadCart() {
-        guard let data = UserDefaults.standard.data(forKey: storageKey),
-              let savedItems = try? JSONDecoder().decode([CartItem].self, from: data)
-        else { return }
-
-        self.items = savedItems
+        storage.saveCart(items)
     }
 }
