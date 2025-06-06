@@ -9,9 +9,17 @@ import SwiftUI
 
 @main
 struct eCommerceSwiftUIApp: App {
+    @StateObject private var session = SessionManager()
+
     var body: some Scene {
         WindowGroup {
-            MainView()
+            if let _ = session.token {
+                MainView()
+                    .environmentObject(session)
+            } else {
+                LoginView(authService: AuthService())
+                    .environmentObject(session)
+            }
         }
     }
 }
