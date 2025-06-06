@@ -8,60 +8,51 @@
 import SwiftUI
 
 struct AccountView: View {
-    @State private var user: User?
-    @State private var isLoading = true
-    @State private var errorMessage: String?
-
-    @EnvironmentObject var session: SessionManager
-
-    let userService: UserServiceProtocol
+    @EnvironmentObject var authManager: AuthManager
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 12) {
-                if isLoading {
-                    ProgressView("Loading user...")
-                } else if let user = user {
-                    Text("👋 Hello, \(user.name.firstname) \(user.name.lastname)")
-                        .font(.title2)
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("📧 \(user.email)")
-                        Text("🏙️ \(user.address.city), \(user.address.street)")
-                        Text("🧑‍💻 \(user.username)")
+            if authManager.isLoggedIn {
+                List {
+                    Section(header: Text("Profile")) {
+                        Text("👤 \(authManager.user?.name ?? "")")
+                        Text("✉️ \(authManager.user?.email ?? "")")
                     }
 
-                    Button("Logout") {
-                        session.logout()
+                    Section(header: Text("Purchase History")) {
+                        ForEach(authManager.purchaseHistory) { item in
+                            VStack(alignment: .leading) {
+                                Text(item.productName)
+                                Text("$\(item.price, specifier: "%.2f") • \(item.date.formatted(date: .abbreviated, time: .shortened))")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                    }
+
+                    Section {
+                        Button("Log Out", role: .destructive) {
+                            authManager.logOut()
+                        }
+                    }
+                }
+                .navigationTitle("My Account")
+            } else {
+                VStack {
+                    Text("Welcome to eCommerce")
+                        .font(.title2)
+                    Button("Log In") {
+                        authManager.logIn()
                     }
                     .buttonStyle(.borderedProminent)
-                    .padding(.top, 20)
-                } else if let errorMessage = errorMessage {
-                    Text("❌ \(errorMessage)")
-                        .foregroundColor(.red)
                 }
+                .navigationTitle("May Account")
             }
-            .padding()
-            .navigationTitle("Account")
         }
-        .task {
-            await loadUser()
-        }
-    }
-
-    private func loadUser() async {
-        do {
-            // This is hardcoded for demo user.
-            // Normally, you'd decode the token to get userID.
-            self.user = try await userService.fetchUser(by: 1)
-        } catch {
-            self.errorMessage = "Failed to fetch user"
-        }
-        self.isLoading = false
     }
 }
 
 #Preview {
-    AccountView(userService: UserService())
-        .environmentObject(SessionManager())
+    AccountView()
+        .environmentObject(AuthManager())
 }

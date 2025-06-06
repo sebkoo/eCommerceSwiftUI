@@ -13,6 +13,6 @@ final class UserServiceTests: XCTestCase {
         let service = UserService()
         let user = try await service.fetchUser(by: 1)
         XCTAssertEqual(user.id, 1)
-        XCTAssertFalse(user.username.isEmpty)
+        XCTAssertFalse(user.name.isEmpty)
     }
 }

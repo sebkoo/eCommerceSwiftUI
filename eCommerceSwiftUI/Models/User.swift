@@ -9,18 +9,6 @@ import Foundation
 
 struct User: Codable, Identifiable {
     let id: Int
+    let name: String
     let email: String
-    let username: String
-    let name: Name
-    let address: Address
-
-    struct Name: Codable {
-        let firstname: String
-        let lastname: String
-    }
-
-    struct Address: Codable {
-        let city: String
-        let street: String
-    }
 }

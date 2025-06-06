@@ -23,9 +23,9 @@ struct MainView: View {
                 }
                 .badge(cartManager.items.reduce(0) { $0 + $1.quantity })
 
-            AccountView(userService: UserService())
+            AccountView()
                 .tabItem {
-                    Label("Account", systemImage: "person.circle")
+                    Label("Account", systemImage: "person")
                 }
 
             FavoritesView()
