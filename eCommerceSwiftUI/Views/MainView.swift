@@ -22,6 +22,11 @@ struct MainView: View {
                     Label("Cart", systemImage: "cart")
                 }
                 .badge(cartManager.items.reduce(0) { $0 + $1.quantity })
+
+            AccountView(userService: UserService())
+                .tabItem {
+                    Label("Account", systemImage: "person.circle")
+                }
         }
         .environmentObject(cartManager)
     }
