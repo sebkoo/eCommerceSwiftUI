@@ -22,6 +22,16 @@ struct Product: Codable, Identifiable, Equatable {
     }
 }
 
+extension Product: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    static func == (lhs: Product, rhs: Product) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
 extension Product {
     static let mock = Product(
         id: 1,

@@ -27,8 +27,14 @@ struct MainView: View {
                 .tabItem {
                     Label("Account", systemImage: "person.circle")
                 }
+
+            FavoritesView()
+                .tabItem {
+                    Label("Wishlist", systemImage: "heart")
+                }
         }
         .environmentObject(cartManager)
+        .environmentObject(FavoritesManager())
     }
 }
 

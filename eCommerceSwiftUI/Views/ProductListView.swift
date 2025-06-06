@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProductListView: View {
     @StateObject var viewModel: ProductListViewModel
+    @EnvironmentObject var favoritesManager: FavoritesManager
 
     var body: some View {
         NavigationView {
@@ -38,6 +39,15 @@ struct ProductListView: View {
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
+
+                                Image(systemName: favoritesManager.isFavorite(product)
+                                      ? "heart.fill"
+                                      : "heart"
+                                )
+                                .foregroundColor(.red)
+                                .onTapGesture {
+                                    favoritesManager.toggleFavorite(product)
+                                }
                             }
                         }
                     }
@@ -54,4 +64,5 @@ struct ProductListView: View {
 
 #Preview {
     ProductListView(viewModel: ProductListViewModel(service: ProductService()))
+        .environmentObject(FavoritesManager())
 }
