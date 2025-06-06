@@ -31,4 +31,18 @@ final class ProductListViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.products.isEmpty)
         XCTAssertNotNil(viewModel.errorMessage)
     }
+
+    func test_filterProducts() async throws {
+        let mockService = MockProductService()
+        let viewModel = ProductListViewModel(service: mockService)
+
+        await viewModel.fetchProducts()
+        viewModel.searchQuery = "mock"
+
+        // Allow debounce to process
+        try await Task.sleep(nanoseconds: 400_000_000)
+
+        XCTAssertEqual(viewModel.filteredProducts.count, 1)
+        XCTAssertEqual(viewModel.filteredProducts.first?.title, "Mock Product")
+    }
 }

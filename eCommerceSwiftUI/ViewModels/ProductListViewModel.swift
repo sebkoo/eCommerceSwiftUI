@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 @MainActor
 final class ProductListViewModel: ObservableObject {
@@ -13,16 +14,14 @@ final class ProductListViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     @Published var searchQuery: String = ""
+    @Published private(set) var filteredProducts: [Product] = []
 
     private let service: ProductServiceProtocol
-
-    var filteredProducts: [Product] { searchQuery.isEmpty
-        ? products
-        : products.filter { $0.title.localizedCaseInsensitiveContains(searchQuery) }
-    }
+    private var cancellables = Set<AnyCancellable>()
 
     init(service: ProductServiceProtocol) {
         self.service = service
+        observeSearchQuery()
     }
 
     func fetchProducts() async {
@@ -32,10 +31,29 @@ final class ProductListViewModel: ObservableObject {
         do {
             let result = try await service.fetchProducts()
             self.products = result
+            self.filteredProducts = result
         } catch {
             self.errorMessage = "Failed to load products: \(error.localizedDescription)"
         }
 
         isLoading = false
+    }
+
+    private func observeSearchQuery() {
+        $searchQuery
+            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .removeDuplicates()
+            .sink { [weak self] query in
+                guard let self else { return }
+
+                if query.isEmpty {
+                    self.filteredProducts = self.products
+                } else {
+                    self.filteredProducts = self.products.filter {
+                        $0.title.localizedCaseInsensitiveContains(query)
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
 }
