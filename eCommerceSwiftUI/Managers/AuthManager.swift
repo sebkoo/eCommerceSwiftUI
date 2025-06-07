@@ -43,7 +43,7 @@ final class AuthManager: ObservableObject {
 
         let payload = segments[1]
         var base64 = payload.replacingOccurrences(of: "-", with: "+")
-            .replacingOccurrences(of: "_", with: "/")
+                            .replacingOccurrences(of: "_", with: "/")
         while base64.count % 4 != 0 {
             base64 += "="
         }
