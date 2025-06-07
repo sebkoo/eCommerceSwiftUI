@@ -14,6 +14,7 @@ struct LoginView: View {
     @State private var isLoading = false
 
     @EnvironmentObject var session: SessionManager
+    @EnvironmentObject var authManager: AuthManager
 
     let authService: AuthServiceProtocol
 
@@ -49,6 +50,7 @@ struct LoginView: View {
         do {
             let token = try await authService.login(username: username, password: password)
             session.token = token
+            try await authManager.loadUser(from: token)
         } catch {
             errorMessage = "Login failed: \(error.localizedDescription)"
         }
@@ -60,4 +62,5 @@ struct LoginView: View {
 #Preview {
     LoginView(authService: AuthService())
         .environmentObject(SessionManager())
+        .environmentObject(AuthManager())
 }

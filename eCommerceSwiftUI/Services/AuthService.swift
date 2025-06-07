@@ -9,6 +9,7 @@ import Foundation
 
 protocol AuthServiceProtocol {
     func login(username: String, password: String) async throws -> String
+    func fetchUser(id: Int) async throws -> User
 }
 
 struct AuthService: AuthServiceProtocol {
@@ -30,5 +31,11 @@ struct AuthService: AuthServiceProtocol {
         
         let result = try JSONDecoder().decode(AuthResponse.self, from: data)
         return result.token
+    }
+
+    func fetchUser(id: Int) async throws -> User {
+        let url = URL(string: "https://fakestoreapi.com/users/\(id)")!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try JSONDecoder().decode(User.self, from: data)
     }
 }
