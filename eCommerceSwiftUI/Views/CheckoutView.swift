@@ -30,7 +30,7 @@ struct CheckoutView: View {
                     HStack {
                         Text("Total")
                         Spacer()
-                        Text("$\(cartManager.total, specifier: "%.2f")")
+                        Text("$\(cartManager.totalPrice, specifier: "%.2f")")
                             .bold()
                     }
                 }
@@ -58,7 +58,7 @@ struct CheckoutView: View {
         message = nil
 
         do {
-            let intent = try await paymentService.createPaymentIntent(amount: cartManager.total)
+            let intent = try await paymentService.createPaymentIntent(amount: cartManager.totalPrice)
             print("💳 Stripe client secret: \(intent.clientSecret)")
 
             // In real Stripe integration: use Stripe iOS SDK to confirm payment with `intent.clientSecret`.

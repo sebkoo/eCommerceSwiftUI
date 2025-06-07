@@ -35,6 +35,7 @@ struct MainView: View {
         }
         .environmentObject(cartManager)
         .environmentObject(FavoritesManager())
+        .environmentObject(CartManager())
     }
 }
 

@@ -12,44 +12,33 @@ import XCTest
 @MainActor
 final class CartManagerTests: XCTestCase {
     func test_addToCart_increasesQuantity() {
-        let manager = CartManager()
-        manager.clearCart()
+        let cart = CartManager()
+        let product = Product.mock
 
-        let product = Product(
-            id: 99,
-            title: "Test",
-            price: 1.0,
-            description: "Test",
-            category: "Test",
-            image: URL(string: "https://test.com")!,
-            rating: .init(rate: 0, count: 0)
-        )
+        cart.addToCart(product)
+        cart.addToCart(product)
 
-        manager.addToCart(product)
-        manager.addToCart(product)
-
-        let item = manager.items.first(where: { $0.product.id == product.id })
-        XCTAssertEqual(item?.quantity, 2)
+        XCTAssertEqual(cart.items.count, 1)
+        XCTAssertEqual(cart.items.first?.quantity, 2)
     }
 
-    func test_removeFromCart_deletesItem() {
-        let manager = CartManager()
-        manager.clearCart()
+    func test_updateQuantity_removesItem() {
+        let cart = CartManager()
+        let product = Product.mock
 
-        let product = Product(
-            id: 100,
-            title: "DeleteTest",
-            price: 1.0,
-            description: "Test",
-            category: "Test",
-            image: URL(string: "https://test.com")!,
-            rating: .init(rate: 0, count: 0)
-        )
+        cart.addToCart(product)
+        cart.updateQuantity(for: product, quantity: 0)
 
-        manager.addToCart(product)
-        let item = manager.items.first!
-        manager.removeFromCart(item)
+        XCTAssertTrue(cart.items.isEmpty)
+    }
 
-        XCTAssertTrue(manager.items.isEmpty)
+    func test_clearCart() {
+        let cart = CartManager()
+        let product = Product.mock
+
+        cart.addToCart(product)
+        cart.clearCart()
+
+        XCTAssertTrue(cart.items.isEmpty)
     }
 }

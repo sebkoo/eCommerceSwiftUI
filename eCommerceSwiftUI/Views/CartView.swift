@@ -12,33 +12,32 @@ struct CartView: View {
 
     var body: some View {
         NavigationView {
-            VStack {
-                if cartManager.items.isEmpty {
-                    Text("🛒 Your cart is empty")
-                        .font(.headline)
-                        .padding()
-                    Spacer()
-                } else {
-                    List {
-                        ForEach(cartManager.items) { item in
-                            HStack {
-                                Text(item.product.title)
-                                    .lineLimit(1)
-                                Spacer()
-                                Text("Qty: \(item.quantity)")
-                            }
+            List {
+                ForEach(cartManager.items) { item in
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(item.product.title).lineLimit(1)
+                            Text("$\(item.product.price, specifier: "%.2f")")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
-                        .onDelete { indexSet in
-                            indexSet.map { cartManager.items[$0] }
-                                .forEach(cartManager.removeFromCart)
+                        Spacer()
+                        Stepper(value: Binding(
+                            get: { item.quantity },
+                            set: { cartManager.updateQuantity(for: item.product, quantity: $0) }
+                        ), in: 0...99) {
+                            Text("Qty: \(item.quantity)")
                         }
                     }
+                }
 
-                    NavigationLink("Proceed to Checkout") {
-                        CheckoutView(paymentService: PaymentService())
+                if !cartManager.items.isEmpty {
+                    HStack {
+                        Text("Total:")
+                        Spacer()
+                        Text("$\(cartManager.totalPrice, specifier: "%.2f")")
+                            .bold()
                     }
-                    .buttonStyle(.borderedProminent)
-                    .padding()
                 }
             }
             .navigationTitle("Cart")

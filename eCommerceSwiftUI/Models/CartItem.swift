@@ -11,4 +11,8 @@ struct CartItem: Identifiable, Codable, Equatable {
     let id: Int
     let product: Product
     var quantity: Int
+
+    var totalPrice: Double {
+        product.price * Double(quantity)
+    }
 }

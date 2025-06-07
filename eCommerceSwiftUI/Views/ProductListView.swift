@@ -10,6 +10,7 @@ import SwiftUI
 struct ProductListView: View {
     @StateObject var viewModel: ProductListViewModel
     @EnvironmentObject var favoritesManager: FavoritesManager
+    @EnvironmentObject var cartManager: CartManager
 
     var body: some View {
         NavigationView {
@@ -24,7 +25,7 @@ struct ProductListView: View {
                             viewModel: ProductDetailViewModel(
                                 product: product))
                         ) {
-                            HStack {
+                            HStack(spacing: 12) {
                                 AsyncImage(url: product.image) { image in
                                     image.resizable()
                                 } placeholder: {
@@ -33,20 +34,34 @@ struct ProductListView: View {
                                 .frame(width: 50, height: 50)
                                 .cornerRadius(8)
 
-                                VStack(alignment: .leading) {
-                                    Text(product.title).lineLimit(1)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(product.title)
+                                        .font(.body)
+                                        .lineLimit(1)
                                     Text("$\(product.price, specifier: "%.2f")")
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
 
-                                Image(systemName: favoritesManager.isFavorite(product)
-                                      ? "heart.fill"
-                                      : "heart"
-                                )
-                                .foregroundColor(.red)
-                                .onTapGesture {
-                                    favoritesManager.toggleFavorite(product)
+                                Spacer()
+
+                                VStack(spacing: 8) {
+                                    // Wishlist Toggle
+                                    Image(systemName: favoritesManager.isFavorite(product)
+                                          ? "heart.fill"
+                                          : "heart"
+                                        )
+                                        .foregroundColor(.red)
+                                        .onTapGesture {
+                                            favoritesManager.toggleFavorite(product)
+                                        }
+
+                                    // Add to Cart
+                                    Image(systemName: "cart.badge.plus")
+                                        .foregroundColor(.blue)
+                                        .onTapGesture {
+                                            cartManager.addToCart(product)
+                                        }
                                 }
                             }
                         }
@@ -65,4 +80,5 @@ struct ProductListView: View {
 #Preview {
     ProductListView(viewModel: ProductListViewModel(service: ProductService()))
         .environmentObject(FavoritesManager())
+        .environmentObject(CartManager())
 }

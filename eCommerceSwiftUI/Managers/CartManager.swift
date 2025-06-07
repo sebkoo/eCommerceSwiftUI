@@ -13,8 +13,8 @@ final class CartManager: ObservableObject {
 
     private let storage: CartStorageProtocol
 
-    var total: Double {
-        items.reduce(0) { $0 + $1.product.price * Double($1.quantity) }
+    var totalPrice: Double {
+        items.reduce(0) { $0 + $1.totalPrice }
     }
 
     init(storage: CartStorageProtocol = CartStorage()) {
@@ -31,9 +31,23 @@ final class CartManager: ObservableObject {
         storage.saveCart(items)
     }
 
-    func removeFromCart(_ item: CartItem) {
-        items.removeAll() { $0.id == item.id }
+    func removeFromCart(_ product: Product) {
+        items.removeAll() { $0.product.id == product.id }
         storage.saveCart(items)
+    }
+
+    func updateQuantity(for product: Product, quantity: Int) {
+        guard let index = items.firstIndex(where: { $0.product.id == product.id }) else { return }
+
+        if quantity <= 0 {
+            removeFromCart(product)
+        } else {
+            items[index].quantity = quantity
+        }
+    }
+
+    func getQuantity(for product: Product) -> Int {
+        items.first(where: { $0.product.id == product.id })?.quantity ?? 0
     }
 
     func clearCart() {
