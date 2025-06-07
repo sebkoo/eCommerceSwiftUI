@@ -44,8 +44,10 @@ struct CartView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     if !cartManager.items.isEmpty {
-                        Button("Clear") {
-                            cartManager.clearCart()
+                        NavigationLink(destination: CheckoutView(paymentService: PaymentService())
+                            .environmentObject(cartManager)
+                        ) {
+                            Text("Checkout")
                         }
                     }
                 }

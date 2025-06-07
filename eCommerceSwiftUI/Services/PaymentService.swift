@@ -19,12 +19,24 @@ struct PaymentService: PaymentServiceProtocol {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let payload = ["amount": amount]
+        let payload = ["amount": Int(amount * 100)] // Stripe uses cents
         request.httpBody = try JSONEncoder().encode(payload)
 
         let (data, _) = try await URLSession.shared.data(for: request)
 
         // Simulating a backend call that returns client secret
         return try JSONDecoder().decode(PaymentIntent.self, from: data)
+    }
+}
+
+final class MockPaymentService: PaymentServiceProtocol {
+    var shouldFail = false
+
+    func createPaymentIntent(amount: Double) async throws -> PaymentIntent {
+        if shouldFail {
+            throw URLError(.badServerResponse)
+        }
+        
+        return PaymentIntent(clientSecret: "mock_secret")
     }
 }
