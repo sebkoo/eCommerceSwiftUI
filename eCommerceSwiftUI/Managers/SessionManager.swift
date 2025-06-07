@@ -6,16 +6,21 @@
 //
 
 import Foundation
+import SwiftUI
 
 @MainActor
 final class SessionManager: ObservableObject {
-    @Published var token: String? {
+    @AppStorage("auth_token") var token: String? {
         didSet {
+            isLoggedIn = token != nil
             UserDefaults.standard.set(token, forKey: "auth_token")
         }
     }
 
+    @Published var isLoggedIn: Bool = false
+
     init() {
+        isLoggedIn = token != nil
         self.token = UserDefaults.standard.string(forKey: "auth_token")
     }
 

@@ -16,12 +16,19 @@ struct AuthService: AuthServiceProtocol {
         let url = URL(string: "https://fakestoreapi.com/auth/login")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        let body = ["username": username, "password": password]
-        request.httpBody = try JSONEncoder().encode(body)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let (data, _) = try await URLSession.shared.data(for: request)
-        let response = try JSONDecoder().decode(AuthResponse.self, from: data)
-        return response.token
+        let payload = ["username": username, "password": password]
+        request.httpBody = try JSONEncoder().encode(payload)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            throw URLError(.badServerResponse)
+        }
+        
+        let result = try JSONDecoder().decode(AuthResponse.self, from: data)
+        return result.token
     }
 }

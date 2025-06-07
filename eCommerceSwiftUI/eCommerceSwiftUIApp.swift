@@ -13,7 +13,7 @@ struct eCommerceSwiftUIApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if let _ = session.token {
+            if session.isLoggedIn {
                 MainView()
                     .environmentObject(session)
             } else {
