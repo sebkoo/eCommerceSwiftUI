@@ -76,7 +76,7 @@ struct RegisterView: View {
         do {
             try await authService.register(newUser: newUser)
             let token = try await authService.login(username: username, password: password)
-            session.token = token
+            session.saveToken(token)
             try await authManager.loadUser(from: token)
         } catch {
             errorMessage = "❌ Registration failed: \(error.localizedDescription)"

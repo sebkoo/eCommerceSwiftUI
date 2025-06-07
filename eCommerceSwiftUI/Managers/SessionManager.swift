@@ -10,27 +10,37 @@ import SwiftUI
 
 @MainActor
 final class SessionManager: ObservableObject {
-    @AppStorage("auth_token") var token: String? {
-        didSet {
-            isLoggedIn = token != nil
-            userId = decodeUseId(from: token)
-            UserDefaults.standard.set(token, forKey: "auth_token")
-        }
-    }
-
+    @Published var token: String?
     @Published var isLoggedIn: Bool = false
     @Published var userId: Int?
 
+    private let keychainService = "com.ecommerce.auth"
+    private let keychainAccount = "jwt_token"
+
     init() {
-        isLoggedIn = token != nil
-        userId = decodeUseId(from: token)
-        self.token = UserDefaults.standard.string(forKey: "auth_token")
+        if let data = KeychainHelper.load(service: keychainService, account: keychainAccount),
+           let storedToken = String(data: data, encoding: .utf8) {
+            self.token = storedToken
+            self.userId = decodeUseId(from: token)
+            self.isLoggedIn = token != nil
+        }
+    }
+
+    func saveToken(_ newToken: String) {
+        self.token = newToken
+        self.userId = decodeUseId(from: newToken)
+        self.isLoggedIn = true
+
+        let data = Data(newToken.utf8)
+        KeychainHelper.save(data, service: keychainService, account: keychainAccount)
     }
 
     func logOut() {
-        token = nil
-        userId = nil
-        UserDefaults.standard.removeObject(forKey: "auth_token")
+        self.token = nil
+        self.userId = nil
+        self.isLoggedIn = false
+
+        KeychainHelper.delete(service: keychainService, account: keychainAccount)
     }
 
     private func decodeUseId(from token: String?) -> Int? {
@@ -38,8 +48,8 @@ final class SessionManager: ObservableObject {
         let parts = token.split(separator: ".")
         guard parts.count == 3 else { return nil }
 
-        let payloadData = base64UrlDecode(String(parts[1]))
-        guard let payloadData = payloadData else { return nil }
+        guard let payloadData = base64UrlDecode(String(parts[1]))
+        else { return nil }
 
         struct Payload: Decodable {
             let sub: Int

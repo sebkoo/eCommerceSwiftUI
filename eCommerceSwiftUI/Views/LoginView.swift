@@ -49,7 +49,7 @@ struct LoginView: View {
 
         do {
             let token = try await authService.login(username: username, password: password)
-            session.token = token
+            session.saveToken(token)
             try await authManager.loadUser(from: token)
         } catch {
             errorMessage = "Login failed: \(error.localizedDescription)"
