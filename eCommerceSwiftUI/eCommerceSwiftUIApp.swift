@@ -14,14 +14,21 @@ struct eCommerceSwiftUIApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if session.isLoggedIn {
-                MainView()
-                    .environmentObject(session)
-                    .environmentObject(authManager)
-            } else {
-                LoginView(authService: AuthService())
-                    .environmentObject(session)
-                    .environmentObject(authManager)
+            Group {
+                if session.isLoggedIn {
+                    MainView()
+                        .environmentObject(session)
+                        .environmentObject(authManager)
+                        .task {
+                            if let token = session.token {
+                                try? await authManager.loadUser(from: token)
+                            }
+                        }
+                } else {
+                    LoginView(authService: AuthService())
+                        .environmentObject(session)
+                        .environmentObject(authManager)
+                }
             }
         }
     }

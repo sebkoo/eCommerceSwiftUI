@@ -16,7 +16,7 @@ struct AccountView: View {
                 List {
                     Section(header: Text("Profile")) {
                         if let user = authManager.user {
-                            Text("👤 \(user.name)")
+                            Text("👤 \(user.name.firstname) \(user.name.lastname)")
                             Text("✉️ \(user.email)")
                         } else {
                             Text("No user info available")
